@@ -322,9 +322,9 @@ html, body {
                 browser = await p.chromium.launch(headless=True)
                 context = None
                 try:
-                    # 设置 device_scale_factor=2.0 来实现高 DPI 渲染
+                    # 设置足够大的 viewport 高度，确保能容纳完整内容
                     page = await browser.new_page(
-                        viewport={"width": 578, "height": 2000},
+                        viewport={"width": 578, "height": 10000},
                         device_scale_factor=2.0
                     )
                     file_url = f"file://{pathname2url(temp_html_path)}"
