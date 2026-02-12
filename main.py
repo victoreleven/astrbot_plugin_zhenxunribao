@@ -322,7 +322,11 @@ html, body {
                 browser = await p.chromium.launch(headless=True)
                 context = None
                 try:
-                    page = await browser.new_page()
+                    # 设置 device_scale_factor=2.0 来实现高 DPI 渲染
+                    page = await browser.new_page(
+                        viewport={"width": 578, "height": 2000},
+                        device_scale_factor=2.0
+                    )
                     file_url = f"file://{pathname2url(temp_html_path)}"
                     await page.goto(file_url, wait_until="networkidle")
                     await page.wait_for_timeout(2000)
@@ -340,17 +344,10 @@ html, body {
                     wrapper_width = int(box["width"])
                     wrapper_height = int(box["height"])
 
-                    # 动态设置viewport高度，添加一些余量
-                    viewport_height = max(int(wrapper_height * 1.2), 1000)
-                    viewport_width = 1156
-
-                    # 重新设置viewport以匹配实际内容
-                    await page.set_viewport_size({"width": viewport_width, "height": viewport_height})
-
                     logger.info(
                         f"Wrapper位置: x={wrapper_x}, y={wrapper_y}, "
                         f"width={wrapper_width}, height={wrapper_height}, "
-                        f"viewport: {viewport_width}x{viewport_height}"
+                        f"device_scale_factor: 2.0"
                     )
 
                     clip_config = {
@@ -362,7 +359,7 @@ html, body {
 
                     logger.info(
                         f"正在截图到: {output_path} "
-                        f"(宽度: {wrapper_width}px, 高度: {wrapper_height}px, 2倍分辨率)"
+                        f"(宽度: {wrapper_width}px, 高度: {wrapper_height}px, 2倍高清分辨率)"
                     )
                     await page.screenshot(
                         path=output_path, full_page=False, type="png", clip=clip_config
